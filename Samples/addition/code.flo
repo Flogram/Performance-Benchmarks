@@ -1,0 +1,2 @@
+fn main() -> (sum: I32):
+    return +(5 , 5)

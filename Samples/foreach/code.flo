@@ -1,0 +1,4 @@
+fn main():
+    values := [10, 15, 23, 9, 60]
+    foreach value at j in values:
+        draw(value)

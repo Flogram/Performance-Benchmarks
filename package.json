@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@munezero/floparser": "^1.2.13"
+  },
+  "type": "module",
+  "scripts": {
+    "update-performance-numbers": "node index.js"
+  }
+}

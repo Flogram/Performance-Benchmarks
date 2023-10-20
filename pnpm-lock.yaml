@@ -1,0 +1,12 @@
+lockfileVersion: '6.0'
+
+dependencies:
+  '@munezero/floparser':
+    specifier: ^1.2.13
+    version: 1.2.13
+
+packages:
+
+  /@munezero/floparser@1.2.13:
+    resolution: {integrity: sha512-4Fb/z2iGWz0b9gUuqrRLN5bFb9B7mc1mio2ZqczNK4SoF/FcDajpylvM2u2G9JpsTSz6TaTCf3AYr9eVVnmYYw==}
+    dev: false

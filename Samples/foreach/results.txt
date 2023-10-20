@@ -1,0 +1,3 @@
+JavaScript execution time: 1.5268750190734863 milliseconds. 
+
+ WebAssembly execution time: 4.059666991233826 milliseconds.
