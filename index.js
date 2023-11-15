@@ -1,5 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
+import { exec } from 'child_process';
 import {
     Parser,
     Tokenizer,
@@ -12,6 +13,28 @@ import {
 const sourceDir = 'Samples';
 const ENCODER = new TextEncoder();
 
+
+async function runCommand(command) {
+    return new Promise((resolve, reject) => {
+        exec(command, (error, stdout, stderr) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve({ stdout, stderr });
+            }
+        });
+    });
+}
+
+async function checkFileExists(filePath) {
+    try {
+        await fs.access(filePath);
+        return true; // The file exists
+    } catch (error) {
+        return false; // The file does not exist
+    }
+}
+
 async function readCodeFiles(dir) {
     const items = await fs.readdir(dir);
 
@@ -23,17 +46,17 @@ async function readCodeFiles(dir) {
             await readCodeFiles(itemPath);
         } else if (item === 'code.flo') {
             const codeContent = await fs.readFile(itemPath, 'utf8');
-            const codeJsPath = path.join(dir, 'code.js');
+            const wasmPath = path.join(dir, 'code.wasm');
+            const cItemPath = path.join(dir, 'code.c');
+            if(!await checkFileExists(cItemPath)){
+                console.log("File not found: ", cItemPath, "!");
+                break;
+            }
 
             try {
-                await fs.access(codeJsPath);
-                // If no error is thrown, the file exists.
-                const codeModule = await import(new URL(`file://${path.resolve(codeJsPath)}`).toString());
-                if (codeModule && typeof codeModule.main === 'function') {
-                    await run(itemPath.split('/').slice(0,-1).join('/'), codeContent, codeModule.main);
-                }
+                await runCommand(`emcc ${cItemPath} -s EXPORTED_FUNCTIONS='["_main"]' -o ${wasmPath}`);
             } catch (err) {
-                console.log(`No JavaScript module found at ${codeJsPath}`, err);
+                console.log(`Command running failed.....`, err);
             }
         }
     }

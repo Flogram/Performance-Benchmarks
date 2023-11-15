@@ -4,6 +4,6 @@
   },
   "type": "module",
   "scripts": {
-    "update-performance-numbers": "node index.js"
+    "test": "node index.js"
   }
 }
