@@ -1,6 +1,8 @@
 {
   "dependencies": {
-    "@munezero/floparser": "^1.2.13"
+    "@munezero/floparser": "^1.2.13",
+    "@wasmer/wasi": "^1.2.2",
+    "@wasmer/wasmfs": "^0.12.0"
   },
   "type": "module",
   "scripts": {

@@ -1,3 +1,3 @@
-JavaScript execution time: 0.01124998927116394 milliseconds. 
+C execution time: 0.005207955837249756 milliseconds. 
 
- WebAssembly execution time: 0.19112500548362732 milliseconds.
+ Flogram execution time: 0.018999993801116943 milliseconds.

@@ -1,6 +1,10 @@
 import fs from 'fs/promises';
+import { readFileSync } from 'fs';
 import path from 'path';
 import { exec } from 'child_process';
+import { fileURLToPath } from 'url';
+import { WASI } from '@wasmer/wasi';
+import { WasmFs } from '@wasmer/wasmfs';
 import {
     Parser,
     Tokenizer,
@@ -11,6 +15,7 @@ import {
 } from '@munezero/floparser';
 
 const sourceDir = 'Samples';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ENCODER = new TextEncoder();
 
 
@@ -46,6 +51,7 @@ async function readCodeFiles(dir) {
             await readCodeFiles(itemPath);
         } else if (item === 'code.flo') {
             const codeContent = await fs.readFile(itemPath, 'utf8');
+            const jsPath = path.join(dir, 'code.cjs');
             const wasmPath = path.join(dir, 'code.wasm');
             const cItemPath = path.join(dir, 'code.c');
             if(!await checkFileExists(cItemPath)){
@@ -54,7 +60,9 @@ async function readCodeFiles(dir) {
             }
 
             try {
-                await runCommand(`emcc ${cItemPath} -s EXPORTED_FUNCTIONS='["_main"]' -o ${wasmPath}`);
+                await runCommand(`emcc ${cItemPath} -s EXPORTED_FUNCTIONS='["_main"]' -o ${jsPath}`);
+
+                await run(itemPath, codeContent, jsPath, wasmPath);
             } catch (err) {
                 console.log(`Command running failed.....`, err);
             }
@@ -62,7 +70,27 @@ async function readCodeFiles(dir) {
     }
 }
 
-async function run(item, codeContent, jsFunction) {
+async function loadWasmFile(js, wasm) {
+    // const wasi = new WASI({
+    //     // Configure WASI options here
+    //     args: [],
+    //     env: {},
+    // });
+    console.log(js)
+    const wasmModule = await import(js);
+    console.log(":ddfasd")
+    const wasmBuffer = await fs.readFile(wasm);
+    console.log("gt hedfasd")
+    // const buffer = readFileSync(filePath);
+    // const wasmModule = await WebAssembly.compile(buffer);
+    // return WebAssembly.instantiate(wasmModule, {...wasi.getImports(wasmModule),}); // Returns instance directly
+    // Instantiate the WebAssembly module using the glue code's functionality
+    const { instance } = await WebAssembly.instantiate(wasmBuffer, wasmModule);
+
+    return instance;
+}
+
+async function run(filePath, codeContent, altPathJS, altPathWASM) {
     let failures = [];
     let representation;
 
@@ -70,7 +98,7 @@ async function run(item, codeContent, jsFunction) {
         const tokenizer = new Tokenizer();
         
                 const parser = Parser.create({
-                    path: item,
+                    path: filePath,
                     imports: SIMPLE_IMPORTS
                 });
         
@@ -96,8 +124,8 @@ async function run(item, codeContent, jsFunction) {
                 const execute = async (glue, module) => {
                     let key;
                     for (const [iKey, value] of Object.entries(glue.procedures)) {
-                        const { name, path } = value;
-                        if (name === 'main' && path === item) {
+                        const { name, path:iPath } = value;
+                        if (name === 'main' && iPath === filePath) {
                             key = iKey;
                             break;
                         }
@@ -127,23 +155,32 @@ async function run(item, codeContent, jsFunction) {
                         const moduleCompiled = await WebAssembly.compile(module);
                         const moduleInstance = await WebAssembly.instantiate(moduleCompiled, descriptionImports);
         
-                        const procedure = moduleInstance.exports[key];
-                        if (procedure) {
+                        const floProcedure = moduleInstance.exports[key];
 
-                            let startWasm = performance.now();
-                            procedure();
-                            let endWasm = performance.now();
-                            let timeWasm = endWasm - startWasm;
-                            const wasmTime = `WebAssembly execution time: ${timeWasm} milliseconds.`;
+                        const wasmInstance = await loadWasmFile(altPathJS, altPathWASM);
 
-                            let startJS = performance.now();
-                            jsFunction();
-                            let endJS = performance.now();
-                            let timeJS = endJS - startJS;
-                            const jsTime = `JavaScript execution time: ${timeJS} milliseconds.`;
+                        if (!wasmInstance.exports.main) {
+                            throw new Error('Exported function main not found!!');
+                        }
+                        const cProcedure = wasmInstance.exports.main;
 
-                            const resultsPath = path.join(item, 'results.txt');
-                            fs.writeFile(resultsPath, `${jsTime} \n\n ${wasmTime}`);
+                        if (floProcedure && cProcedure) {
+
+                            let startFlo = performance.now();
+                            floProcedure();
+                            let endFlo = performance.now();
+                            let timeFlo = endFlo - startFlo;
+                            const timeFloDescription = `Flogram execution time: ${timeFlo} milliseconds.`;
+
+                            let startC = performance.now();
+                            cProcedure();
+                            let endC = performance.now();
+                            let timeC = endC - startC;
+                            const timeCDescription = `C execution time: ${timeC} milliseconds.`;
+
+
+                            const resultsPath = path.join(filePath.replace('/code.flo', ''), 'results.txt');
+                            fs.writeFile(resultsPath, `${timeCDescription} \n\n ${timeFloDescription}`);
                         }
                     }
                 };
@@ -158,13 +195,13 @@ async function run(item, codeContent, jsFunction) {
                     await execute(glue, module);
                 }
     } catch (error) {
-        console.error(`Error processing file ${item}:`, error);
+        console.error(`Error processing file ${filePath}:`, error);
     }
 }
 
 (async () => {
     try {
-        await readCodeFiles(sourceDir);
+        await readCodeFiles(path.join(__dirname, sourceDir));
         console.log(`'Finished updating performance numbers......`);
     } catch (error) {
         console.error('An error occurred:', error);
