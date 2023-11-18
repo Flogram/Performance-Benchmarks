@@ -1,10 +1,8 @@
 import fs from 'fs/promises';
-import { readFileSync } from 'fs';
 import path from 'path';
 import { exec } from 'child_process';
 import { fileURLToPath } from 'url';
-import { WASI } from '@wasmer/wasi';
-import { WasmFs } from '@wasmer/wasmfs';
+import chalk from 'chalk';
 import {
     Parser,
     Tokenizer,
@@ -71,16 +69,8 @@ async function readCodeFiles(dir) {
 }
 
 async function loadWasmFile(js, wasm) {
-    // const wasi = new WASI({
-    //     // Configure WASI options here
-    //     args: [],
-    //     env: {},
-    // });
-    console.log(js)
     const wasmModule = await import(js);
-    console.log(":ddfasd")
     const wasmBuffer = await fs.readFile(wasm);
-    console.log("gt hedfasd")
     // const buffer = readFileSync(filePath);
     // const wasmModule = await WebAssembly.compile(buffer);
     // return WebAssembly.instantiate(wasmModule, {...wasi.getImports(wasmModule),}); // Returns instance directly

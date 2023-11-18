@@ -1,0 +1,10 @@
+fn factorial(a: I32)->(b: I32):
+    bool condition = ==(a,0)
+    if condition is TRUE:
+        return 1
+    return *(a, factorial(-(a,1)))
+
+fn main()->(f: I32):
+    n := 20
+    fact := factorial(n)
+    return fact

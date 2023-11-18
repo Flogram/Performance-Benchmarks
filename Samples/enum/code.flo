@@ -1,0 +1,6 @@
+enum InterrogativeAnswers:
+    YES
+    NO
+
+fn main()->(i: InterrogativeAnswers):
+    return YES

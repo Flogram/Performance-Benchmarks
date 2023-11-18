@@ -1,0 +1,4 @@
+fn main()->(n: I32):
+    n = 9.9
+    cast = I32(n)
+    return cast

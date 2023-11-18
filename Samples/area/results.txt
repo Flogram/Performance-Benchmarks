@@ -1,0 +1,3 @@
+C execution time: 0.003958001732826233 milliseconds. 
+
+ Flogram execution time: 0.02195899188518524 milliseconds.

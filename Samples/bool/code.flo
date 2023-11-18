@@ -1,0 +1,3 @@
+fn main()->(a: Bool):
+    a := TRUE
+    return a

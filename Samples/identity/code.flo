@@ -1,0 +1,2 @@
+fn identity() -> (a: I32):
+  return 1
