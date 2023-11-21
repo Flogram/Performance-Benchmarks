@@ -58,9 +58,14 @@ async function readCodeFiles(dir) {
             }
 
             try {
-                await runCommand(`emcc ${cItemPath} -s EXPORTED_FUNCTIONS='["_main"]' -o ${jsPath}`);
 
-                await run(itemPath, codeContent, jsPath, wasmPath);
+                const cCompilationStart = performance.now();
+                await runCommand(`emcc ${cItemPath} -s EXPORTED_FUNCTIONS='["_main"]' -o ${jsPath}`);
+                const cCompilationEnd = performance.now();
+
+                const cInitialCompilation = cCompilationEnd - cCompilationStart;
+
+                await run(itemPath, codeContent, jsPath, wasmPath, cInitialCompilation);
             } catch (err) {
                 console.log(`Command running failed.....`, err);
             }
@@ -80,11 +85,12 @@ async function loadWasmFile(js, wasm) {
     return instance;
 }
 
-async function run(filePath, codeContent, altPathJS, altPathWASM) {
+async function run(filePath, codeContent, altPathJS, altPathWASM, cInitialCompilation) {
     let failures = [];
     let representation;
 
     try {
+        const floCompilationStart = performance.now();
         const tokenizer = new Tokenizer();
         
                 const parser = Parser.create({
@@ -146,13 +152,18 @@ async function run(filePath, codeContent, altPathJS, altPathWASM) {
                         const moduleInstance = await WebAssembly.instantiate(moduleCompiled, descriptionImports);
         
                         const floProcedure = moduleInstance.exports[key];
+                        const floCompilationEnd = performance.now();
+                        const floCompilation = floCompilationEnd-floCompilationStart;
 
+                        const cXCompilationStart = performance.now();
                         const wasmInstance = await loadWasmFile(altPathJS, altPathWASM);
 
                         if (!wasmInstance.exports.main) {
                             throw new Error('Exported function main not found!!');
                         }
                         const cProcedure = wasmInstance.exports.main;
+                        const cXCompilationEnd = performance.now();
+                        const cCompilation = cXCompilationEnd-cXCompilationStart + cInitialCompilation ;
 
                         if (floProcedure && cProcedure) {
 
@@ -160,17 +171,17 @@ async function run(filePath, codeContent, altPathJS, altPathWASM) {
                             floProcedure();
                             let endFlo = performance.now();
                             let timeFlo = endFlo - startFlo;
-                            const timeFloDescription = `Flogram execution time: ${timeFlo} milliseconds.`;
+                            const timeFloDescription = `Flogram run time: ${timeFlo} milliseconds.`;
 
                             let startC = performance.now();
                             cProcedure();
                             let endC = performance.now();
                             let timeC = endC - startC;
-                            const timeCDescription = `C execution time: ${timeC} milliseconds.`;
+                            const timeCDescription = `C run time: ${timeC} milliseconds.`;
 
 
                             const resultsPath = path.join(filePath.replace('/code.flo', ''), 'results.txt');
-                            fs.writeFile(resultsPath, `${timeCDescription} \n\n ${timeFloDescription}`);
+                            fs.writeFile(resultsPath, `Compile Time: \n\tFlogram compile time: ${floCompilation} milliseconds \n\tC compile time: ${cCompilation} milliseconds \n\nRun Time:\n\t${timeFloDescription} \n\t${timeCDescription} \n`);
                         }
                     }
                 };
