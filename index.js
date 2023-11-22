@@ -49,8 +49,8 @@ async function readCodeFiles(dir) {
             await readCodeFiles(itemPath);
         } else if (item === 'code.flo') {
             const codeContent = await fs.readFile(itemPath, 'utf8');
-            const jsPath = path.join(dir, 'code.cjs');
-            const wasmPath = path.join(dir, 'code.wasm');
+            const jsPath = path.join(dir, 'c_code.cjs');
+            const wasmPath = path.join(dir, 'c_code.wasm');
             const cItemPath = path.join(dir, 'code.c');
             if(!await checkFileExists(cItemPath)){
                 console.log("File not found: ", cItemPath, "!");
@@ -60,8 +60,9 @@ async function readCodeFiles(dir) {
             try {
 
                 const cCompilationStart = performance.now();
-                await runCommand(`emcc ${cItemPath} -s EXPORTED_FUNCTIONS='["_main"]' -o ${jsPath}`);
+                await runCommand(`emcc ${cItemPath} -O0 -s EXPORTED_FUNCTIONS='["_main"]' -o ${jsPath}`);
                 const cCompilationEnd = performance.now();
+                await runCommand(`wasm2wat ${wasmPath} -o ${wasmPath.replace('.wasm','.wat')}`);
 
                 const cInitialCompilation = cCompilationEnd - cCompilationStart;
 
@@ -154,6 +155,11 @@ async function run(filePath, codeContent, altPathJS, altPathWASM, cInitialCompil
                         const floProcedure = moduleInstance.exports[key];
                         const floCompilationEnd = performance.now();
                         const floCompilation = floCompilationEnd-floCompilationStart;
+
+                        const floWASMPath = altPathJS.replace('c_code.cjs', 'flo_code.wasm');
+
+                        await fs.writeFile(floWASMPath, module);
+                        await runCommand(`wasm2wat ${floWASMPath} -o ${floWASMPath.replace('.wasm','.wat')}`);
 
                         const cXCompilationStart = performance.now();
                         const wasmInstance = await loadWasmFile(altPathJS, altPathWASM);
