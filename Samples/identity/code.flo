@@ -1,2 +1,2 @@
-fn identity() -> (a: I32):
+fn main() -> (a: I32):
   return 1

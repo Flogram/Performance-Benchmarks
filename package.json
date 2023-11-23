@@ -1,12 +1,14 @@
 {
-  "dependencies": {
-    "@munezero/floparser": "^1.2.13",
-    "@wasmer/wasi": "^1.2.2",
-    "@wasmer/wasmfs": "^0.12.0",
-    "chalk": "^5.3.0"
-  },
-  "type": "module",
-  "scripts": {
-    "start": "node index.js"
-  }
+	"dependencies": {
+		"@munezero/floparser": "^1.2.14",
+		"@wasmer/wasi": "^1.2.2",
+		"@wasmer/wasmfs": "^0.12.0",
+		"chalk": "^5.3.0",
+		"prettier": "^3.1.0"
+	},
+	"type": "module",
+	"scripts": {
+		"start": "node index.js",
+		"format": "prettier --write --plugin-search-dir=. ."
+	}
 }
