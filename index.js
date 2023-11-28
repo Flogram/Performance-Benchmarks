@@ -57,7 +57,12 @@ async function readCodeFiles(dir) {
 			}
 			try {
 				const cCompilationStart = performance.now();
-				await runCommand(`emcc ${cItemPath} -O0 -s EXPORTED_FUNCTIONS='["_main"]' -o ${jsPath}`);
+				await runCommand(
+					`emcc ${cItemPath} -O2 -s WASM=1 -s SIDE_MODULE=1 -s EXPORTED_FUNCTIONS='["_main"]' -o ${jsPath.replace(
+						'.cjs',
+						'.wasm'
+					)}`
+				);
 				const cCompilationEnd = performance.now();
 				await runCommand(`wasm2wat ${wasmPath} -o ${wasmPath.replace('.wasm', '.wat')}`);
 
@@ -74,13 +79,23 @@ async function readCodeFiles(dir) {
 async function loadWasmFile(js, wasm) {
 	const wasmModule = await import(js);
 	const wasmBuffer = await fs.readFile(wasm);
-	// const buffer = readFileSync(filePath);
-	// const wasmModule = await WebAssembly.compile(buffer);
-	// return WebAssembly.instantiate(wasmModule, {...wasi.getImports(wasmModule),}); // Returns instance directly
-	// Instantiate the WebAssembly module using the glue code's functionality
+
 	const { instance } = await WebAssembly.instantiate(wasmBuffer, wasmModule);
 
 	return instance;
+}
+async function loadWASMNoJS(wasm) {
+	const WA = WebAssembly,
+		env = {
+			memoryBase: 0,
+			tableBase: 0,
+			memory: new WA.Memory({ initial: 256 }),
+			table: new WA.Table({ initial: 0, element: 'anyfunc' })
+		},
+		code = new Uint8Array(await fs.readFile(wasm));
+	const WAModule = await WA.compile(code);
+	const WAInstance = await WA.instantiate(WAModule, env);
+	return WAInstance;
 }
 
 async function run(filePath, codeContent, altPathJS, altPathWASM, cInitialCompilation) {
@@ -165,7 +180,8 @@ async function run(filePath, codeContent, altPathJS, altPathWASM, cInitialCompil
 				await runCommand(`wasm2wat ${floWASMPath} -o ${floWASMPath.replace('.wasm', '.wat')}`);
 
 				const cXCompilationStart = performance.now();
-				const wasmInstance = await loadWasmFile(altPathJS, altPathWASM);
+				// const wasmInstance = await loadWasmFile(altPathJS, altPathWASM);
+				const wasmInstance = await loadWASMNoJS(altPathWASM);
 
 				if (!wasmInstance.exports.main) {
 					throw new Error('Exported function main not found!!');
