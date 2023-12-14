@@ -193,6 +193,7 @@ async function run(filePath, codeContent, altPathJS, altPathWASM, cInitialCompil
 				if (floProcedure && cProcedure) {
 					let startFlo = performance.now();
 					floProcedure();
+					console.log(floProcedure);
 					let endFlo = performance.now();
 					let timeFlo = endFlo - startFlo;
 					const timeFloDescription = `Flogram run time: ${timeFlo} milliseconds.`;
@@ -201,6 +202,7 @@ async function run(filePath, codeContent, altPathJS, altPathWASM, cInitialCompil
 					cProcedure();
 					let endC = performance.now();
 					let timeC = endC - startC;
+					console.log(cProcedure);
 					const timeCDescription = `C run time: ${timeC} milliseconds.`;
 
 					const resultsPath = path.join(filePath.replace('/code.flo', ''), 'results.txt');

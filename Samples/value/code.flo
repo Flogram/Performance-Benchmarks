@@ -1,0 +1,2 @@
+fn main()->(a: I32):
+    return 10
