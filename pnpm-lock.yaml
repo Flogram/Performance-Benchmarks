@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@munezero/floparser':
-    specifier: ^1.2.14
-    version: 1.2.14
+    specifier: ^1.2.18
+    version: 1.2.18
   '@wasmer/wasi':
     specifier: ^1.2.2
     version: 1.2.2
@@ -23,8 +23,8 @@ dependencies:
 
 packages:
 
-  /@munezero/floparser@1.2.14:
-    resolution: {integrity: sha512-Iu01sYiUA07QkQM4O/nE5LqBjYmkJ/mWsbWiUFj1WPOUMqoJZ19MgxeVRuWYgar+rr84IRAZ2fY/lDBMG1wdVQ==}
+  /@munezero/floparser@1.2.18:
+    resolution: {integrity: sha512-8T1J5g2YCQQk4fmGrWLpS14XKuV35gGpuS/ZJJuARolUr3utViozgnFtyNZgrwIqMgnTpnqhrNWM9uhAuaAlyg==}
     dev: false
 
   /@wasmer/wasi@1.2.2:

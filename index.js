@@ -156,14 +156,16 @@ async function run(filePath, codeContent, altPathJS, altPathWASM, cInitialCompil
 
 				const descriptionImports = Object.freeze({
 					imports: {
-						memory: memory,
-						alloc: state.alloc,
-						dealloc: state.dealloc,
-						merge: state.merge,
-						save: state.save,
-						undo: state.undo,
-						undoPenultimate: state.undoPenultimate,
-						draw: drawer.receiveParams
+						memory: memory
+					}
+				});
+			
+				Object.keys(glue.imports).forEach((importKey) => {
+					if (state[importKey]) {
+						descriptionImports.imports[importKey] = state[importKey];
+					}
+					if (drawer[importKey]) {
+						descriptionImports.imports[importKey] = drawer[importKey];
 					}
 				});
 
