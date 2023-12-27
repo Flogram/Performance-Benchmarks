@@ -155,10 +155,10 @@ async function run(filePath, codeContent, altPathJS, altPathWASM, cInitialCompil
 				const drawer = Draw(memory);
 
 				const descriptionImports = Object.freeze({
-					imports: {
-						memory: memory
-					}
+					imports: {}
 				});
+
+				const memoryImport = 'memory';
 			
 				Object.keys(glue.imports).forEach((importKey) => {
 					if (state[importKey]) {
@@ -166,6 +166,9 @@ async function run(filePath, codeContent, altPathJS, altPathWASM, cInitialCompil
 					}
 					if (drawer[importKey]) {
 						descriptionImports.imports[importKey] = drawer[importKey];
+					}
+					if (importKey === memoryImport) {
+						descriptionImports.imports[importKey] = memory;
 					}
 				});
 
