@@ -58,7 +58,7 @@ async function readCodeFiles(dir) {
 			try {
 				const cCompilationStart = performance.now();
 				await runCommand(
-					`emcc ${cItemPath} -O2 -s WASM=1 -s SIDE_MODULE=1 -s EXPORTED_FUNCTIONS='["_main"]' -o ${jsPath.replace(
+					`emcc ${cItemPath} -O0 -s WASM=1 -s SIDE_MODULE=1 -s EXPORTED_FUNCTIONS='["_main"]' -o ${jsPath.replace(
 						'.cjs',
 						'.wasm'
 					)}`
