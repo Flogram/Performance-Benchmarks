@@ -58,7 +58,7 @@ async function readCodeFiles(dir) {
 			try {
 				const cCompilationStart = performance.now();
 				await runCommand(
-					`emcc ${cItemPath} -O0 -s WASM=1 -s SIDE_MODULE=1 -s EXPORTED_FUNCTIONS='["_main"]' -o ${jsPath.replace(
+					`emcc ${cItemPath} -O2 -s WASM=1 -s SIDE_MODULE=1 -s EXPORTED_FUNCTIONS='["_main"]' -o ${jsPath.replace(
 						'.cjs',
 						'.wasm'
 					)}`
@@ -196,19 +196,30 @@ async function run(filePath, codeContent, altPathJS, altPathWASM, cInitialCompil
 				const cCompilation = cXCompilationEnd - cXCompilationStart + cInitialCompilation;
 
 				if (floProcedure && cProcedure) {
+					console.log(filePath);
+					if(filePath.includes('addition')){
+						const add = () => {
+							return 5+5;
+						}
+						let startJS = performance.now();
+						add();
+						let endJS = performance.now();
+						console.log("Javascript: ",endJS-startJS);
+					}
 					let startFlo = performance.now();
 					floProcedure();
-					console.log(floProcedure);
 					let endFlo = performance.now();
 					let timeFlo = endFlo - startFlo;
 					const timeFloDescription = `Flogram run time: ${timeFlo} milliseconds.`;
+					console.log(timeFloDescription);
 
 					let startC = performance.now();
 					cProcedure();
 					let endC = performance.now();
+					console.log("........................");
 					let timeC = endC - startC;
-					console.log(cProcedure);
 					const timeCDescription = `C run time: ${timeC} milliseconds.`;
+					console.log(timeCDescription)
 
 					const resultsPath = path.join(filePath.replace('/code.flo', ''), 'results.txt');
 					fs.writeFile(

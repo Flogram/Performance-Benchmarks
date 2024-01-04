@@ -3,5 +3,5 @@
 
 bool main() {
     bool a = true;
-    return true;
+    return a;
 }
