@@ -1,0 +1,73 @@
+object 3DVector:
+    x: FP64
+    y: FP64
+    z: FP64
+
+object Body:
+    position: 3DVector
+    velocity: 3DVector
+    mass: FP64
+
+fn range(n: I32) -> (r: Array{I32}):
+    r : Array{I32}(size = n) = Array{I32}(size = n)
+    mut i := 1
+    loop:
+        if ==(-(i, -1), n):
+            break
+        r[-(i, 1)] = i
+        i = +(i, 1)
+    return r
+
+fn sqrt(S: FP64) -> (root: FP64):
+    epsilon : FP64 = 0.00001
+    mut x := S
+    loop:
+        next_x := *(FP64(0.5), /(+(x,S), x))
+        mut x_choice := -(next_x, x)
+        if <(x_choice, 0):
+            x_choice = -(x_choice, 1)
+        if <(x_choice, epsilon):
+            break
+        x = next_x
+    return x
+    
+fn calculateForce(body1: Body, body2: Body) -> (force: 3DVector):
+    G : FP64 = 667430000000
+    x_Diff := -(body2.position.x, body1.position.x)
+    y_Diff := -(body2.position.y, body1.position.y)
+    z_Diff := -(body2.position.z, body1.position.z)
+    distance := sqrt(+(+(*(x_Diff, x_Diff), *(y_Diff, y_Diff)), *(z_Diff, z_Diff)))
+    forceMagnitude := /(*(G, *(body1.mass, body2.mass)), *(distance, distance))
+    direction := /(-(body2.position, body1.position), distance)
+    force := *(direction, forceMagnitude)
+    return force
+
+fn updateVelocity(body: Body, force: 3DVector, deltaTime: FP32):
+    acceleration := /(force, body.mass)
+    body.velocity = +(body.velocity, *(acceleration, deltaTime))
+
+fn updatePosition(body: Body, deltaTime: FP32):
+    body.position = +(body.position, *(body.velocity, deltaTime))
+
+fn main():
+    deltaTime := 0.001
+    numSteps := 1000
+    bodies := [
+        Body(mass: 198900000000000000000000000000000, position: 3DVector(x: 0, y: 0, z: 0), velocity: 3DVector(x: 0, y: 0, z: 0)), # Sun
+        Body(mass: 5972000000000000000000000, position: 3DVector(x: 149600000000, y: 0, z: 0), velocity: 3DVector(x: 0, y: 29780, z: 0)), # Earth
+    ]
+
+    for step in range(numSteps):
+        forces : Array{3DVector} = []
+        for i in range(size(bodies)):
+            forces[i] = 3DVector(x: 0, y: 0, z: 0)
+
+        # Calculate forces between all pairs of bodies
+        for i in range(size(bodies)):
+            for j in range(size(bodies)):
+                if !=(i, j):
+                    force := calculateForce(bodies[i], bodies[j])
+                    forces[i] = +(forces[i], force)
+        for i in range(size(bodies)):
+            updateVelocity(bodies[i], forces[i], deltaTime)
+            updatePosition(bodies[i], deltaTime)

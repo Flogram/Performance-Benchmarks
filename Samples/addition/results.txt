@@ -1,7 +1,7 @@
 Compile Time: 
-	Flogram compile time: 22.485124826431274 milliseconds 
-	C compile time: 599.1481671333313 milliseconds 
+	Flogram compile time: 34.69725000858307 milliseconds 
+	C compile time: 787.9103320837021 milliseconds 
 
 Run Time:
-	Flogram run time: 0.022874832153320312 milliseconds. 
-	C run time: 0.021291017532348633 milliseconds. 
+	Flogram run time: 0.022459030151367188 milliseconds. 
+	C run time: 0.02283298969268799 milliseconds. 

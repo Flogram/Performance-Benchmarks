@@ -120,6 +120,7 @@ async function run(filePath, codeContent, altPathJS, altPathWASM, cInitialCompil
 				chalk.red(`Error ${failure.type} in ${split}:`),
 				chalk.redBright(failure.message)
 			);
+			console.log(failure)
 		});
 
 		parser.on(Parser.EVENT_DONE, (data) => {
@@ -159,7 +160,7 @@ async function run(filePath, codeContent, altPathJS, altPathWASM, cInitialCompil
 				});
 
 				const memoryImport = 'memory';
-			
+
 				Object.keys(glue.imports).forEach((importKey) => {
 					if (state[importKey]) {
 						descriptionImports.imports[importKey] = state[importKey];
@@ -197,14 +198,14 @@ async function run(filePath, codeContent, altPathJS, altPathWASM, cInitialCompil
 
 				if (floProcedure && cProcedure) {
 					console.log(filePath);
-					if(filePath.includes('addition')){
+					if (filePath.includes('addition')) {
 						const add = () => {
-							return 5+5;
-						}
+							return 5 + 5;
+						};
 						let startJS = performance.now();
 						add();
 						let endJS = performance.now();
-						console.log("Javascript: ",endJS-startJS);
+						console.log('Javascript: ', endJS - startJS);
 					}
 					let startFlo = performance.now();
 					floProcedure();
@@ -216,10 +217,10 @@ async function run(filePath, codeContent, altPathJS, altPathWASM, cInitialCompil
 					let startC = performance.now();
 					cProcedure();
 					let endC = performance.now();
-					console.log("........................");
+					console.log('........................');
 					let timeC = endC - startC;
 					const timeCDescription = `C run time: ${timeC} milliseconds.`;
-					console.log(timeCDescription)
+					console.log(timeCDescription);
 
 					const resultsPath = path.join(filePath.replace('/code.flo', ''), 'results.txt');
 					fs.writeFile(
@@ -241,6 +242,7 @@ async function run(filePath, codeContent, altPathJS, altPathWASM, cInitialCompil
 		}
 	} catch (error) {
 		console.error(chalk.redBright(`Error processing file ${filePath}:`, error.message));
+		console.log(error)
 	}
 }
 
