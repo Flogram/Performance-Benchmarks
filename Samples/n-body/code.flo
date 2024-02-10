@@ -1,11 +1,11 @@
-object 3DVector:
+object Vector3D:
     x: FP64
     y: FP64
     z: FP64
 
 object Body:
-    position: 3DVector
-    velocity: 3DVector
+    position: Vector3D
+    velocity: Vector3D
     mass: FP64
 
 fn range(n: I32) -> (r: Array{I32}):
@@ -30,44 +30,62 @@ fn sqrt(S: FP64) -> (root: FP64):
             break
         x = next_x
     return x
-    
-fn calculateForce(body1: Body, body2: Body) -> (force: 3DVector):
+
+fn add2Bodies(b1: Body, b2: Body) -> (s: Body):
+    return Body(mass= +(b1.mass, b2.mass), position= Vector3D(x= +(b1.position.x,b2.position.x), y= +(b1.position.y, b2.position.y), z=+(b1.position.z,b2.position.z)), velocity= Vector3D(x= +(b1.velocity.x, b2.velocity.x), y= +(b1.velocity.y, b2.velocity.y), z= +(b1.velocity.z, b2.velocity.z)))
+
+fn +(v1: Vector3D, v2: Vector3D) -> (v: Vector3D):
+    return Vector3D(x= +(v1.x, v2.x), y= +(v1.y, v2.y), z= +(v1.z, v2.z))
+
+fn -(v1: Vector3D, v2: Vector3D) -> (v: Vector3D):
+    return Vector3D(x= -(v1.x, v2.x), y= -(v1.y, v2.y), z= -(v1.z, v2.z))
+
+fn v_plus_scalar(v: Vector3D, s: FP64) -> (s: Vector3D):
+    return Vector3D(x= +(v.x, s),y= +(v.y, s), z= +(v.z, s))
+
+fn v_with_scalar(v: Vector3D, s: FP64) -> (p: Vector3D):
+    return Vector3D(x= *(v.x, s),y= *(v.y, s), z= *(v.z, s))
+
+fn v_over_scalar(v: Vector3D, s: FP64) -> (q: Vector3D):
+    return Vector3D(x= /(v.x, s),y= /(v.y, s), z= /(v.z, s))
+
+fn calculateForce(body1: Body, body2: Body) -> (force: Vector3D):
     G : FP64 = 667430000000
     x_Diff := -(body2.position.x, body1.position.x)
     y_Diff := -(body2.position.y, body1.position.y)
     z_Diff := -(body2.position.z, body1.position.z)
     distance := sqrt(+(+(*(x_Diff, x_Diff), *(y_Diff, y_Diff)), *(z_Diff, z_Diff)))
     forceMagnitude := /(*(G, *(body1.mass, body2.mass)), *(distance, distance))
-    direction := /(-(body2.position, body1.position), distance)
-    force := *(direction, forceMagnitude)
+    direction := v_over_scalar(-(body2.position, body1.position), distance)
+    force := v_with_scalar(direction, forceMagnitude)
     return force
 
-fn updateVelocity(body: Body, force: 3DVector, deltaTime: FP32):
-    acceleration := /(force, body.mass)
-    body.velocity = +(body.velocity, *(acceleration, deltaTime))
+fn updateVelocity(mut body: Body, force: Vector3D, deltaTime: FP64):
+    acceleration := v_over_scalar(force, body.mass)
+    body.velocity = +(body.velocity, v_with_scalar(acceleration, deltaTime))
 
-fn updatePosition(body: Body, deltaTime: FP32):
-    body.position = +(body.position, *(body.velocity, deltaTime))
+fn updatePosition(mut body: Body, deltaTime: FP64):
+    body.position = +(body.position, v_with_scalar(body.velocity, deltaTime))
 
 fn main():
     deltaTime := 0.001
     numSteps := 1000
-    bodies := [
-        Body(mass: 198900000000000000000000000000000, position: 3DVector(x: 0, y: 0, z: 0), velocity: 3DVector(x: 0, y: 0, z: 0)), # Sun
-        Body(mass: 5972000000000000000000000, position: 3DVector(x: 149600000000, y: 0, z: 0), velocity: 3DVector(x: 0, y: 29780, z: 0)), # Earth
-    ]
+    bodies := [Body(mass= 198900, position= Vector3D(x= 0, y= 0, z= 0), velocity= Vector3D(x= 0, y= 0, z= 0)), Body(mass= 5972000, position= Vector3D(x= 14960, y= 0, z= 0), velocity= Vector3D(x= 0, y= 29780, z= 0))]
 
-    for step in range(numSteps):
-        forces : Array{3DVector} = []
-        for i in range(size(bodies)):
-            forces[i] = 3DVector(x: 0, y: 0, z: 0)
+    foreach step in range(numSteps):
+        forces : Array{Vector3D}(size = size(bodies)) = []
+        foreach i in range(size(bodies)):
+            forces[i] = Vector3D(x= 0, y= 0, z= 0)
 
         # Calculate forces between all pairs of bodies
-        for i in range(size(bodies)):
-            for j in range(size(bodies)):
+        foreach i in range(size(bodies)):
+            foreach j in range(size(bodies)):
                 if !=(i, j):
                     force := calculateForce(bodies[i], bodies[j])
                     forces[i] = +(forces[i], force)
-        for i in range(size(bodies)):
+        foreach i in range(size(bodies)):
             updateVelocity(bodies[i], forces[i], deltaTime)
             updatePosition(bodies[i], deltaTime)
+
+
+
