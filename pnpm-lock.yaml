@@ -1,14 +1,14 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@munezero/floparser': 1.2.16
+  '@munezero/floparser': 1.2.21
   '@wasmer/wasi': ^1.2.2
   '@wasmer/wasmfs': ^0.12.0
   chalk: ^5.3.0
   prettier: ^3.1.0
 
 dependencies:
-  '@munezero/floparser': 1.2.16
+  '@munezero/floparser': 1.2.21
   '@wasmer/wasi': 1.2.2
   '@wasmer/wasmfs': 0.12.0
   chalk: 5.3.0
@@ -16,8 +16,8 @@ dependencies:
 
 packages:
 
-  /@munezero/floparser/1.2.16:
-    resolution: {integrity: sha512-KvqKGDeeFYiDTcJRTXe6gW5mN6KAeeVtwQrl9IH+evA9apA/Z2il7rqZX44nAzQ2ccFpXnKEvFJADEalIW5zLQ==}
+  /@munezero/floparser/1.2.21:
+    resolution: {integrity: sha512-fVfwHY/qOboF0cSoE6wwQDUjx4NrZh9SWpnqXeDMJpXV7vF1g8Sn+DvgtwCD5KDur0QdJtHXqA6R1Mrd21JDPQ==}
     dev: false
 
   /@wasmer/wasi/1.2.2:

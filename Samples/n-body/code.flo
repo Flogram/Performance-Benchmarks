@@ -84,8 +84,8 @@ fn main():
                     force := calculateForce(bodies[i], bodies[j])
                     forces[i] = +(forces[i], force)
         foreach i in range(size(bodies)):
-            updateVelocity(bodies[i], forces[i], deltaTime)
-            updatePosition(bodies[i], deltaTime)
+            updateVelocity(mut bodies[i], forces[i], FP64(deltaTime))
+            updatePosition(mut bodies[i], FP64(deltaTime))
 
 
 

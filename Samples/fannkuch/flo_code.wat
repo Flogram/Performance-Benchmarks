@@ -25,6 +25,8 @@
         br_if 1 (;@1;)
         drop
         local.get 0
+        local.get 1
+        drop
         local.get 2
         i32.const 4
         i32.mul
@@ -90,6 +92,8 @@
     block  ;; label = @1
       loop  ;; label = @2
         local.get 0
+        local.get 1
+        drop
         i32.const 0
         i32.const 4
         i32.mul
@@ -116,6 +120,8 @@
               br 2 (;@3;)
             end
             local.get 0
+            local.get 1
+            drop
             local.get 4
             i32.load
             i32.const 4
@@ -130,6 +136,8 @@
             i32.mul
             i32.add
             local.get 0
+            local.get 1
+            drop
             local.get 3
             local.get 4
             i32.load
@@ -169,6 +177,8 @@
         i32.add
         i32.store
         local.get 0
+        local.get 1
+        drop
         i32.const 0
         i32.const 4
         i32.mul
@@ -248,7 +258,7 @@
     i32.mul
     i32.add
     i32.add
-    i32.const 3
+    i32.const 0
     i32.store
     global.set 0
     global.get 0
@@ -284,7 +294,7 @@
     i32.mul
     i32.add
     i32.add
-    i32.const 3
+    i32.const 0
     i32.store
     global.set 0
     global.get 0
@@ -320,7 +330,7 @@
     i32.mul
     i32.add
     i32.add
-    i32.const 3
+    i32.const 0
     i32.store
     global.set 0
     global.get 0
@@ -356,7 +366,7 @@
     i32.mul
     i32.add
     i32.add
-    i32.const 3
+    i32.const 0
     i32.store
     global.set 0
     global.get 0
@@ -392,7 +402,7 @@
     i32.mul
     i32.add
     i32.add
-    i32.const 3
+    i32.const 0
     i32.store
     global.set 0
     global.get 0
@@ -428,7 +438,7 @@
     i32.mul
     i32.add
     i32.add
-    i32.const 3
+    i32.const 0
     i32.store
     global.set 0
     global.get 0

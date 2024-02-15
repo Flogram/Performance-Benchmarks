@@ -52,6 +52,8 @@
         br_if 1 (;@1;)
         drop
         local.get 0
+        local.get 1
+        drop
         local.get 2
         i32.const 4
         i32.mul
