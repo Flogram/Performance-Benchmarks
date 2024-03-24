@@ -9,12 +9,12 @@ object Body:
     mass: FP64
 
 fn range(n: I32) -> (r: Array{I32}):
-    r : Array{I32}(size = n) = Array{I32}(size = n)
+    r : Array{I32}(size = n) = []
     mut i := 1
     loop:
-        if ==(-(i, -1), n):
+        if >=(i, n):
             break
-        r[-(i, 1)] = i
+        r[i] = i
         i = +(i, 1)
     return r
 
@@ -24,7 +24,7 @@ fn sqrt(S: FP64) -> (root: FP64):
     loop:
         next_x := *(FP64(0.5), /(+(x,S), x))
         mut x_choice := -(next_x, x)
-        if <(x_choice, 0):
+        if <(x_choice, FP64(0)):
             x_choice = -(x_choice, 1)
         if <(x_choice, epsilon):
             break
@@ -69,8 +69,9 @@ fn updatePosition(mut body: Body, deltaTime: FP64):
 
 fn main():
     deltaTime := 0.001
-    numSteps := 1000
+    numSteps := 100
     bodies := [Body(mass= 198900, position= Vector3D(x= 0, y= 0, z= 0), velocity= Vector3D(x= 0, y= 0, z= 0)), Body(mass= 5972000, position= Vector3D(x= 14960, y= 0, z= 0), velocity= Vector3D(x= 0, y= 29780, z= 0))]
+    declared := range(numSteps)
 
     foreach step in range(numSteps):
         forces : Array{Vector3D}(size = size(bodies)) = []
@@ -86,6 +87,3 @@ fn main():
         foreach i in range(size(bodies)):
             updateVelocity(mut bodies[i], forces[i], FP64(deltaTime))
             updatePosition(mut bodies[i], FP64(deltaTime))
-
-
-

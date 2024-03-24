@@ -1,19 +1,17 @@
 fn printPermutation(p: Array{I32}):
-    foreach i in p:
-        draw(i, " ")
-    draw("\n")
+    draw(p)
 
 fn flipCount(p: Array{I32}) -> (f: I32):
+    mut start := 0
     mut flips := 0
     while !=(p[0], 1):
         k := p[0]
         mut i := 0
-        loop:
-            if >=(i, /(k, 2)):
-                break
+        while <(i, /(k, 2)):
+            mirrorIndex := -(-(k, i), 1)
             temp := p[i]
-            p[i] = p[-(k, -(i, 1))]
-            p[-(k, -(i, 1))] = temp
+            p[i] = p[mirrorIndex]
+            p[mirrorIndex] = temp
             i = +(i, 1)
         flips = +(flips, 1)
     return flips

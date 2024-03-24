@@ -1,0 +1,23 @@
+fn reverse_complement(dna: String) -> (reverse: String):
+    len : I32 = size(dna)
+    reverse := dna
+
+    for i := 0 almost_up_to len by 1:
+        idx := -(-(len,i), 1)
+        c : Char = dna[idx]
+        if ==(c,'A'):
+            reverse[i] = 'T'
+        if ==(c,'T'):
+            reverse[i] = 'A'
+        if ==(c,'C'):
+            reverse[i] = 'G'
+        if ==(c,'G'):
+            reverse[i] = 'C'
+    return reverse
+
+fn main() -> (r: String):
+    dna : String = "ATGCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCG"
+    draw(dna)
+    reverse := reverse_complement(dna)
+    draw(reverse)
+    return reverse
